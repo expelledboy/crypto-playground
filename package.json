@@ -1,0 +1,28 @@
+{
+  "scripts": {
+    "prepare": "husky install",
+    "lint": "eslint . --cache --fix --ext .js",
+    "format": "prettier --loglevel warn --write \"**/*.{js}\"",
+    "start": "node ./src/index.js",
+    "pretest": "yarn run lint",
+    "test": "node ./src/index.js",
+    "posttest": "yarn run format"
+  },
+  "dependencies": {
+    "isomorphic-webcrypto": "^2.3.8"
+  },
+  "devDependencies": {
+    "eslint": "^8.17.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.0",
+    "prettier": ">=2"
+  },
+  "lint-staged": {
+    "**/*": "prettier --write --ignore-unknown"
+  },
+  "type": "module",
+  "private": true,
+  "license": "MIT"
+}
