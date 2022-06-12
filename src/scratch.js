@@ -1,13 +1,13 @@
 import crypto from 'isomorphic-webcrypto'
 
 const createSalt = async () =>
-	crypto.getRandomValues(new Uint8Array(16))
+  crypto.getRandomValues(new Uint8Array(16))
 
 const saltToHexString = (salt) =>
-	Array.prototype.map.call(new Uint8Array(salt), x => ('00' + x.toString(16)).slice(-2)).join('')
+  Array.prototype.map.call(new Uint8Array(salt), x => ('00' + x.toString(16)).slice(-2)).join('')
 
 const hexStringToArrayBuffer = (hexString) =>
-	new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)))
+  new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)))
 
 // export const bufferToBase64 = (buffer) =>
 // 	Buffer.from(buffer).toString('base64')
@@ -30,9 +30,9 @@ const saltHex = saltToHexString(salt)
 const saltDecoded = hexStringToArrayBuffer(saltHex)
 
 console.log({
-	salt,
-	saltHex,
-	saltDecoded,
+  salt,
+  saltHex,
+  saltDecoded,
 })
 
 

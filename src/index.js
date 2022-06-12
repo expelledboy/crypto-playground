@@ -1,8 +1,8 @@
 import { createCryptoKey, createRandomArrayBuffer, createKeyPair, encrypt, arrayBufferToHexString } from './crypto.js'
 
 const user = {
-	id: 1,
-	pin: "1234"
+  id: 1,
+  pin: "1234"
 }
 
 // const cryptoKey = await createCryptoKey(user.pin)

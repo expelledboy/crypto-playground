@@ -2,3 +2,5 @@
 node_modules/
 yarn-error.log
 .npm-packages/
+firestore-debug.log
+ui-debug.log
