@@ -4,3 +4,13 @@ yarn-error.log
 .npm-packages/
 firestore-debug.log
 ui-debug.log
+.expo/
+dist/
+npm-debug.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+web-build/
