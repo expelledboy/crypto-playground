@@ -1,4 +1,4 @@
-with (import <nixpkgs> {});
+with (import <nixpkgs> { });
 
 mkShell {
   buildInputs = [
@@ -8,14 +8,9 @@ mkShell {
     nodePackages.yarn
   ];
 
-  NPM_CONFIG_PREFIX = builtins.toString ./.npm-packages;
-
   shellHook = ''
-    test -d node_modules || yarn install
-  '';
-
-  postHook = ''
     export PATH=$NPM_CONFIG_PREFIX/bin:$PATH
+    test -d node_modules || yarn install
     which expo || yarn global add expo-cli
     which firebase || yarn global add firebase-tools
   '';

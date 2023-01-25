@@ -2,8 +2,7 @@
 node_modules/
 yarn-error.log
 .npm-packages/
-firestore-debug.log
-ui-debug.log
+*-debug.log
 .expo/
 dist/
 npm-debug.*
@@ -14,3 +13,5 @@ npm-debug.*
 *.mobileprovision
 *.orig.*
 web-build/
+firebase.data/
+.direnv/
