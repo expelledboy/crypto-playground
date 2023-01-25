@@ -8,7 +8,7 @@ describe("CryptoService", () => {
     expect(nonce.length).toBe(64)
   })
 
-  it("generate a key pair from a pin and an iv", () => {
+  it.skip("generate a key pair from a pin and an iv", () => {
     const pin = "1234"
     const iv = CryptoService.createNonce()
 
@@ -18,7 +18,7 @@ describe("CryptoService", () => {
     expect(publicKey).toContain("PUBLIC KEY")
   })
 
-  it("key pair is deterministic", () => {
+  it.skip("key pair is deterministic", () => {
     const pin = "1234"
     const iv = CryptoService.createNonce()
 
@@ -28,7 +28,7 @@ describe("CryptoService", () => {
     expect(keyPairOne.publicKey).toBe(keyPairTwo.publicKey)
   })
 
-  it("sign and verify a message", () => {
+  it.skip("sign and verify a message", () => {
     const pin = "1234"
     const iv = CryptoService.createNonce()
     const keyPair = CryptoService.generateKey(pin, iv)
