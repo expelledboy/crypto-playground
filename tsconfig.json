@@ -4,6 +4,7 @@
     "moduleResolution": "node",
     "noEmit": true,
     "esModuleInterop": true,
+    "types": ["node", "jest"],
     "strict": true,
     "skipLibCheck": true
   }
