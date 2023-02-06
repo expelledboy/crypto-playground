@@ -1,4 +1,4 @@
-import * as crypto from "./crypto"
+import * as crypto from "./isomorphic-webcrypto"
 
 const createNonce: CryptoService["createNonce"] = crypto.createNonce
 

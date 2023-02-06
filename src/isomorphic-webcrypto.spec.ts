@@ -7,7 +7,7 @@ import {
   importPublicKey,
   sign,
   verify,
-} from "./crypto"
+} from "./isomorphic-webcrypto"
 
 describe("createNonce", () => {
   const nonce = createNonce()
