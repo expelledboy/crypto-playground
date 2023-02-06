@@ -4,9 +4,13 @@ import {
   genMasterKeyPair,
   genMasterSubKeyPair,
   genSecretFromPassword,
+  genSession,
+  mintVoucher,
   sign,
   verify,
+  verifySession,
   verifySubKeyPair,
+  verifyVoucher,
 } from "./js-nacl"
 
 const fixture = {
@@ -108,3 +112,48 @@ test("sign and verify", async () => {
 
   expect(verified).toBe(true)
 })
+
+describe("genSession", () => {
+  it("generates a session", async () => {
+    const userSecret = await genSecretFromPassword(fixture.iv, fixture.password)
+    const userKeyPair = await genAuthKeyPair(userSecret)
+    const keyPair = await genMasterKeyPair()
+    const subKeyPair = await genMasterSubKeyPair(keyPair.privateKey)
+    const session = await genSession(subKeyPair, userKeyPair.publicKey)
+
+    expect(session).toStrictEqual({
+      data: {
+        userPublicKey: userKeyPair.publicKey,
+        systemPublicKey: subKeyPair.publicKey,
+        validUntil: expect.any(Date),
+      },
+      signature: expect.any(String),
+    })
+  })
+
+  test("verifySession", async () => {
+    const userSecret = await genSecretFromPassword(fixture.iv, fixture.password)
+    const userKeyPair = await genAuthKeyPair(userSecret)
+    const keyPair = await genMasterKeyPair()
+    const subKeyPair = await genMasterSubKeyPair(keyPair.privateKey)
+    const session = await genSession(subKeyPair, userKeyPair.publicKey)
+
+    const verified = await verifySession(session, subKeyPair.publicKey)
+
+    expect(verified).toBe(true)
+  })
+})
+
+test("mint and verify voucher", async () => {
+  const userSecret = await genSecretFromPassword(fixture.iv, fixture.password)
+  const userKeyPair = await genAuthKeyPair(userSecret)
+  const keyPair = await genMasterKeyPair()
+  const subKeyPair = await genMasterSubKeyPair(keyPair.privateKey)
+  const session = await genSession(subKeyPair, userKeyPair.publicKey)
+
+  const voucher = await mintVoucher(userKeyPair, session, 1000)
+  const verified = await verifyVoucher(voucher)
+  expect(verified).toBe(true)
+})
+
+

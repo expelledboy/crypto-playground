@@ -26,7 +26,12 @@ export const genSecretFromPassword = async (iv: string, password: string) => {
   return await scrypt.scrypt(nacl.encode_utf8(password), nacl.from_hex(iv), N, r, p, dkLen)
 }
 
-export const genMasterKeyPair = async () => {
+type KeyPair = {
+  publicKey: string
+  privateKey: string
+}
+
+export const genMasterKeyPair = async (): Promise<KeyPair> => {
   const nacl = await NACL
 
   const keyPair = nacl.crypto_sign_keypair()
@@ -37,7 +42,11 @@ export const genMasterKeyPair = async () => {
   }
 }
 
-export const genMasterSubKeyPair = async (masterPrivateKey: string) => {
+type MasterSubKeyPair = KeyPair & {
+  signature: string
+}
+
+export const genMasterSubKeyPair = async (masterPrivateKey: string): Promise<MasterSubKeyPair> => {
   const nacl = await NACL
 
   const keyPair = await genMasterKeyPair()
@@ -57,7 +66,7 @@ export const verifySubKeyPair = async (
   subKeySignature: string,
   subKeyPublicKey: string,
   masterPublicKey: string
-) => {
+): Promise<boolean> => {
   const nacl = await NACL
 
   return nacl.crypto_sign_verify_detached(
@@ -67,7 +76,7 @@ export const verifySubKeyPair = async (
   )
 }
 
-export const genAuthKeyPair = async (secret: Uint8Array) => {
+export const genAuthKeyPair = async (secret: Uint8Array): Promise<KeyPair> => {
   const nacl = await NACL
 
   const keyPair = nacl.crypto_sign_seed_keypair(secret)
@@ -78,7 +87,7 @@ export const genAuthKeyPair = async (secret: Uint8Array) => {
   }
 }
 
-export const sign = async (message: string, privateKey: string) => {
+export const sign = async (message: string, privateKey: string): Promise<string> => {
   const nacl = await NACL
 
   const signature = nacl.crypto_sign_detached(nacl.encode_utf8(message), nacl.from_hex(privateKey))
@@ -86,7 +95,11 @@ export const sign = async (message: string, privateKey: string) => {
   return nacl.to_hex(signature)
 }
 
-export const verify = async (signature: string, message: string, publicKey: string) => {
+export const verify = async (
+  signature: string,
+  message: string,
+  publicKey: string
+): Promise<boolean> => {
   const nacl = await NACL
 
   const verified = nacl.crypto_sign_verify_detached(
@@ -97,3 +110,86 @@ export const verify = async (signature: string, message: string, publicKey: stri
 
   return verified
 }
+
+type Session = {
+  data: {
+    userPublicKey: string
+    systemPublicKey: string
+    validUntil: Date
+  }
+  signature: string
+}
+
+export const genSession = async (
+  systemKeyPair: KeyPair,
+  userPublicKey: string
+): Promise<Session> => {
+  const nacl = await NACL
+
+  // 24 hours
+  const validUntil = new Date()
+  validUntil.setHours(validUntil.getHours() + 24)
+
+  const data = {
+    userPublicKey,
+    systemPublicKey: systemKeyPair.publicKey,
+    validUntil,
+  }
+
+  const signature = await sign(JSON.stringify(data), systemKeyPair.privateKey)
+
+  return {
+    data,
+    signature,
+  }
+}
+
+export const verifySession = async (
+  session: Session,
+  systemPublicKey: string
+): Promise<boolean> => {
+  const nacl = await NACL
+
+  return await verify(session.signature, JSON.stringify(session.data), systemPublicKey)
+}
+
+type Voucher = {
+  data: {
+    session: Session
+    amount: number
+  }
+  signature: string
+}
+
+export const mintVoucher = async (
+  userKeyPair: KeyPair,
+  session: Session,
+  amount: number
+): Promise<Voucher> => {
+  const nacl = await NACL
+
+  const data = {
+    session,
+    amount,
+  }
+
+  const signature = await sign(JSON.stringify(data), userKeyPair.privateKey)
+
+  return {
+    data,
+    signature,
+  }
+}
+
+export const verifyVoucher = async (voucher: Voucher): Promise<boolean> => {
+  const nacl = await NACL
+
+  return await verify(
+    voucher.signature,
+    JSON.stringify(voucher.data),
+    voucher.data.session.data.userPublicKey
+  )
+}
+
+
+
