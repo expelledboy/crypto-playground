@@ -10,18 +10,13 @@ import {
 } from "./js-nacl"
 
 const fixture = {
-  iv: Uint8Array.from(
-    "a"
-      .repeat(64)
-      .split("")
-      .map((c) => c.charCodeAt(0))
-  ),
+  iv: "a".repeat(64),
   password: "password",
 }
 
 test("createNonce", async () => {
   const nonce = await createNonce()
-  expect(nonce.length).toBe(32)
+  expect(nonce.length).toBe(64)
 })
 
 describe("genSecretFromPassword", () => {
@@ -43,8 +38,8 @@ describe("genAuthKeyPair", () => {
     const iv = await createNonce()
     const secret = await genSecretFromPassword(iv, fixture.password)
     const keyPair = await genAuthKeyPair(secret)
-    expect(keyPair.publicKey.length).toBe(32)
-    expect(keyPair.privateKey.length).toBe(64)
+    expect(keyPair.publicKey.length).toBe(64)
+    expect(keyPair.privateKey.length).toBe(128)
   })
 
   it("is deterministic", async () => {
@@ -59,8 +54,8 @@ describe("genAuthKeyPair", () => {
 describe("genMasterKeyPair", () => {
   it("generates a key", async () => {
     const keyPair = await genMasterKeyPair()
-    expect(keyPair.publicKey.length).toBe(32)
-    expect(keyPair.privateKey.length).toBe(64)
+    expect(keyPair.publicKey.length).toBe(64)
+    expect(keyPair.privateKey.length).toBe(128)
   })
 
   it("is not deterministic", async () => {
@@ -73,10 +68,10 @@ describe("genMasterKeyPair", () => {
   describe("genMasterSubKeyPair", () => {
     it("generates a key", async () => {
       const keyPair = await genMasterKeyPair()
-      expect(keyPair.privateKey.length).toBe(64)
+      expect(keyPair.privateKey.length).toBe(128)
       const subKeyPair = await genMasterSubKeyPair(keyPair.privateKey)
-      expect(subKeyPair.publicKey.length).toBe(32)
-      expect(subKeyPair.privateKey.length).toBe(64)
+      expect(subKeyPair.publicKey.length).toBe(64)
+      expect(subKeyPair.privateKey.length).toBe(128)
     })
 
     it("is not deterministic", async () => {
